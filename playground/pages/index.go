@@ -36,7 +36,6 @@ type TokenResponse struct {
 	TokenType    string `json:"token_type"`
 	ExpiresIn    int    `json:"expires_in"`
 	RefreshToken string `json:"refresh_token"`
-	// Add other fields if necessary
 }
 
 // takes HTTP response (w) and HTTP request (r) - intended to handle requests to ("/")
@@ -110,7 +109,7 @@ func kindeAuth(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, authURL, http.StatusSeeOther)
 
 	// cookieAmount := readCookie(w, r)
-	getAccessToken(w, r)
+	// getAccessToken(w, r)
 }
 
 // Handling the callback
@@ -128,7 +127,7 @@ func main() {
 	}
 
 	KindeClientID = os.Getenv("KINDE_CLIENT_ID")
-	KindeClientSecret = os.Getenv("KINDE_CLIENT_ID")
+	KindeClientSecret = os.Getenv("KINDE_CLIENT_SECRET")
 	KindeDomain = os.Getenv("KINDE_ISSUER_URL")
 	LocalDomain = os.Getenv("KINDE_SITE_URL")
 
