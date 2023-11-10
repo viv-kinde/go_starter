@@ -1,0 +1,37 @@
+{{define "content"}}
+    <header>
+        <nav class="nav container">
+            <h1 class="text-display-3">KindeAuth</h1>
+            <div class="js-logged-in-view">
+                <div class="profile-blob">
+                    <div class="js-user-avatar avatar"></div>
+                    <div>
+                        <p class="js-user-name text-heading-2"></p>
+                        <a id="logout" class="text-subtle" type="button" href="/logout">
+                            Sign out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="js-logged-in-view">
+                <div class="card start-hero">
+                    <p class="text-body-2 start-hero-intro">Woohoo!</p>
+                    <p class="text-display-2">
+                        Your authentication is all sorted.
+                        <br />
+                        Build the important stuff.
+                    </p>
+                </div>
+                
+                <section class="next-steps-section">
+                    <h2 class="text-heading-1">Next steps for you</h2>
+                </section>
+            </div>
+        </div>
+    </main>
+{{end}}

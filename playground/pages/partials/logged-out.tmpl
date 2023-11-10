@@ -1,0 +1,43 @@
+            <button id="login" class="btn btn-ghost sign-in-btn">
+                Sign in
+            </button>
+            <button id="register" class="btn btn-dark">
+                Sign up
+            </button>
+{{define "content"}}
+    <header>
+        <nav class="nav container">
+            <h1 class="text-display-3">KindeAuth</h1>
+            <div class="go-logged-out-view">
+
+            <a id="login" class="btn btn-ghost sign-in-btn" type="button" href="/login">
+                Sign in
+            </a>
+            <a id="register" class="btn btn-dark" type="button" href="/register">
+                Sign up
+            </a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="go-logged-out-view">
+                <div class="card hero">
+                    <p class="text-display-1 hero-title">
+                        Let's start authenticating <br /> with KindeAuth
+                    </p>
+                    <p class="text-body-1 hero-tagline">Configure your app</p>
+                    <!-- go sdk or starter kit -->
+                    <a
+                        href="https://kinde.com/docs/sdks/javascript-sdk"
+                        target="_blank"
+                        rel="noreferrer"
+                        class="btn btn-light btn-big"
+                        >
+                        Go to docs
+                    </a>
+            </div>
+        </div>
+    </main>
+{{end}}
