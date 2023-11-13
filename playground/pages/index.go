@@ -58,7 +58,8 @@ func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	getAccessToken(w, r)
+	accessToken := getAccessToken(w, r)
+	fmt.Println("access token:", accessToken)
 }
 
 func genRandState() (string, error) {
@@ -109,7 +110,8 @@ func kindeAuth(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, authURL, http.StatusSeeOther)
 
 	// cookieAmount := readCookie(w, r)
-	// getAccessToken(w, r)
+	// accessToken := getAccessToken(w, r)
+	// fmt.Println(accessToken)
 }
 
 // Handling the callback

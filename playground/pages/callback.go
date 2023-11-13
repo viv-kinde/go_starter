@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func getAccessToken(w http.ResponseWriter, r *http.Request) {
+func getAccessToken(w http.ResponseWriter, r *http.Request) string {
 	// Get the authorization code from the query parameters
 	code := r.URL.Query().Get("code")
 
@@ -24,40 +24,44 @@ func getAccessToken(w http.ResponseWriter, r *http.Request) {
 	payload.Set("code", code)
 	payload.Set("redirect_uri", LocalDomain+"/dashboard")
 
-	// Make the POST request to the token endpoint
+	// make POST req to tokenURL endpoint -> send payload
 	res, err := http.Post(tokenURL, "application/x-www-form-urlencoded", strings.NewReader(payload.Encode()))
 	if err != nil {
 		fmt.Println("Error making the request:", err)
-		return
+		// return
 	}
 	defer res.Body.Close()
 
-	// Read the response body
+	// read response body
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println("Error reading the response body:", err)
-		return
+		// return
 	}
 
-	// Check the response status code
+	// check status code for errs
 	if res.StatusCode != http.StatusOK {
 		fmt.Println("Request failed with status:", res.Status)
-		return
+		// return
 	}
 
-	// Parse the response body to get the access token
+	// parse response body -> to get access token
 	var response map[string]interface{}
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		fmt.Println("Error parsing response body:", err)
-		return
+		// return
 	}
 
 	accessToken, ok := response["access_token"].(string)
 	if !ok {
 		fmt.Println("Access token not found in the response")
-		return
+		// return
 	}
 
-	fmt.Println("Access Token:", accessToken)
+	return accessToken
+
+	// http.Redirect(w, r, "http://localhost:3000/dashboard", http.StatusSeeOther)
+
+	// fmt.Println("Access Token:", accessToken)
 }
