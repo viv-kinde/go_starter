@@ -80,17 +80,6 @@ func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	// template.Must - panics if there's err during parsing
 	tmpl := template.Must(template.ParseFiles("partials/logged-in.tmpl", "templates/layout.tmpl", "partials/header.tmpl", "partials/footer.tmpl"))
 
-	type UserInfo struct {
-		Email      string  `json:"email"`
-		FamilyName string  `json:"family_name"`
-		GivenName  string  `json:"given_name"`
-		ID         string  `json:"id"`
-		Name       string  `json:"name"`
-		Picture    string  `json:"picture"`
-		Sub        string  `json:"sub"`
-		UpdatedAt  float64 `json:"updated_at"`
-	}
-
 	accessToken := getAccessToken(w, r)
 
 	userInfo, err := getUserInfo(accessToken)
