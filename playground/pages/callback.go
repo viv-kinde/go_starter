@@ -86,45 +86,40 @@ func getAccessToken(w http.ResponseWriter, r *http.Request) string {
 	return accessToken
 }
 
-func getUserInfo(accessToken string) (map[string]interface{}, error) {
-	type UserInfo struct {
-		Email      string  `json:"email"`
-		FamilyName string  `json:"family_name"`
-		GivenName  string  `json:"given_name"`
-		ID         string  `json:"id"`
-		Name       string  `json:"name"`
-		Picture    string  `json:"picture"`
-		Sub        string  `json:"sub"`
-		UpdatedAt  float64 `json:"updated_at"`
-	}
+type UserInfo struct {
+	Email      string  `json:"email"`
+	FamilyName string  `json:"family_name"`
+	GivenName  string  `json:"given_name"`
+	ID         string  `json:"id"`
+	Name       string  `json:"name"`
+	Picture    string  `json:"picture"`
+	Sub        string  `json:"sub"`
+	UpdatedAt  float64 `json:"updated_at"`
+}
 
-	// Set up the request to the userinfo endpoint
+func getUserInfo(accessToken string) (UserInfo, error) {
 	req, err := http.NewRequest("GET", KindeDomain+"/oauth2/v2/user_profile", nil)
 	if err != nil {
-		return nil, err
+		return UserInfo{}, err
 	}
 
-	// Add the access token to the request headers
 	req.Header.Add("Authorization", "Bearer "+accessToken)
 
-	// Make the request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return UserInfo{}, err
 	}
 	defer resp.Body.Close()
 
-	// Check the response status code
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("request for user profile failed with status code %d", resp.StatusCode)
+		return UserInfo{}, fmt.Errorf("request for user profile failed with status code %d", resp.StatusCode)
 	}
 
-	// Parse the JSON response
-	var userProfile map[string]interface{}
+	var userProfile UserInfo
 	err = json.NewDecoder(resp.Body).Decode(&userProfile)
 	if err != nil {
-		return nil, err
+		return UserInfo{}, err
 	}
 
 	return userProfile, nil
