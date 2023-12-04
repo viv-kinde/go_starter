@@ -87,6 +87,17 @@ func getAccessToken(w http.ResponseWriter, r *http.Request) string {
 }
 
 func getUserInfo(accessToken string) (map[string]interface{}, error) {
+	type UserInfo struct {
+		Email      string  `json:"email"`
+		FamilyName string  `json:"family_name"`
+		GivenName  string  `json:"given_name"`
+		ID         string  `json:"id"`
+		Name       string  `json:"name"`
+		Picture    string  `json:"picture"`
+		Sub        string  `json:"sub"`
+		UpdatedAt  float64 `json:"updated_at"`
+	}
+
 	// Set up the request to the userinfo endpoint
 	req, err := http.NewRequest("GET", KindeDomain+"/oauth2/v2/user_profile", nil)
 	if err != nil {
@@ -109,15 +120,6 @@ func getUserInfo(accessToken string) (map[string]interface{}, error) {
 		return nil, fmt.Errorf("request for user profile failed with status code %d", resp.StatusCode)
 	}
 
-	// see how node JS one + is working
-	// javascript - isAuthenticated check - allow user / founder to access - depends if the user exists.  if not authenticated, send to their UI / send to logout page - if something's wrong with access token ie expired - use refresh token to get the new one
-	// build refresh token endpoint
-	// redirect to logout
-
-	// logout - doing the next step
-	// remove cookies, redirect to KindeLogout (endpoint)
-	// logout redirect - if provided logout uri, we flush everything our side and send them out to their logout
-
 	// Parse the JSON response
 	var userProfile map[string]interface{}
 	err = json.NewDecoder(resp.Body).Decode(&userProfile)
@@ -127,12 +129,3 @@ func getUserInfo(accessToken string) (map[string]interface{}, error) {
 
 	return userProfile, nil
 }
-
-// they're starting with hardcoding org plans + user plans
-
-// get name, desc, key,
-// entitlements API - get list of entitlements back
-// create entitlements + plans
-
-// if the user comes back - direct dashboard
-// if its 403 error,
