@@ -5,7 +5,7 @@
             <div class="js-logged-in-view">
                 <div class="profile-blob">
                     <div class="js-user-avatar avatar">
-                        {{if not .Picture}}
+                        {{if .Picture}}
                             <img
                                 class="js-user-avatar-picture avatar"
                                 src="{{.Picture}}"
@@ -16,7 +16,7 @@
                         {{end}}
                     </div>
                     <div>
-                        <p class="js-user-name text-heading-2"></p>
+                        <p class="js-user-name text-heading-2">{{.Name}}</p>
                         <a id="logout" class="text-subtle" type="button" href="/logout">
                             Sign out
                         </a>
