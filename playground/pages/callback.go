@@ -95,9 +95,20 @@ type UserInfo struct {
 	Picture    string  `json:"picture"`
 	Sub        string  `json:"sub"`
 	UpdatedAt  float64 `json:"updated_at"`
+	Initials   string
+}
+
+func getInitials(familyName, givenName string) string {
+	// Extract the first character from each name
+	familyInitial := string(familyName[0])
+	givenInitial := string(givenName[0])
+
+	// Concatenate initials
+	return familyInitial + givenInitial
 }
 
 func getUserInfo(accessToken string) (UserInfo, error) {
+
 	req, err := http.NewRequest("GET", KindeDomain+"/oauth2/v2/user_profile", nil)
 	if err != nil {
 		return UserInfo{}, err
@@ -121,6 +132,8 @@ func getUserInfo(accessToken string) (UserInfo, error) {
 	if err != nil {
 		return UserInfo{}, err
 	}
+
+	userProfile.Initials = getInitials(userProfile.GivenName, userProfile.FamilyName)
 
 	return userProfile, nil
 }

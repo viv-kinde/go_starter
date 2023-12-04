@@ -4,7 +4,17 @@
             <h1 class="text-display-3">KindeAuth</h1>
             <div class="js-logged-in-view">
                 <div class="profile-blob">
-                    <div class="js-user-avatar avatar"></div>
+                    <div class="js-user-avatar avatar">
+                        {{if not .Picture}}
+                            <img
+                                class="js-user-avatar-picture avatar"
+                                src="{{.Picture}}"
+                                alt="user profile avatar"
+                            />
+                        {{else}}
+                            <p>{{.Initials}}</p>
+                        {{end}}
+                    </div>
                     <div>
                         <p class="js-user-name text-heading-2"></p>
                         <a id="logout" class="text-subtle" type="button" href="/logout">
