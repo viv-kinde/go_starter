@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -21,6 +22,9 @@ var (
 	LocalDomain       string
 	State             string
 	Code              string
+	sessionMutex      sync.Mutex
+
+	sessions = make(map[string]string)
 )
 
 type OAuthConfig struct {
@@ -38,6 +42,29 @@ type TokenResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+// Function to generate a unique session ID
+func generateSessionID() string {
+	bytes := make([]byte, 32)
+	if _, err := rand.Read(bytes); err != nil {
+		// Handle the error, panic, or return a default value
+		return "default_session_id"
+	}
+	return base64.URLEncoding.EncodeToString(bytes)
+}
+
+func getAccessTokenFromSession(sessionID string) string {
+	sessionMutex.Lock()
+	defer sessionMutex.Unlock()
+	return sessions[sessionID]
+}
+
+// Function to set the access token in the session
+func setAccessTokenInSession(sessionID, accessToken string) {
+	sessionMutex.Lock()
+	defer sessionMutex.Unlock()
+	sessions[sessionID] = accessToken
+}
+
 // takes HTTP response (w) and HTTP request (r) - intended to handle requests to ("/")
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("partials/logged-out.tmpl", "templates/layout.tmpl", "partials/header.tmpl", "partials/footer.tmpl"))
@@ -53,13 +80,29 @@ func dashboardHandler(w http.ResponseWriter, r *http.Request) {
 	// template.Must - panics if there's err during parsing
 	tmpl := template.Must(template.ParseFiles("partials/logged-in.tmpl", "templates/layout.tmpl", "partials/header.tmpl", "partials/footer.tmpl"))
 
-	err := tmpl.ExecuteTemplate(w, "layout.tmpl", nil)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	type UserInfo struct {
+		Email      string  `json:"email"`
+		FamilyName string  `json:"family_name"`
+		GivenName  string  `json:"given_name"`
+		ID         string  `json:"id"`
+		Name       string  `json:"name"`
+		Picture    string  `json:"picture"`
+		Sub        string  `json:"sub"`
+		UpdatedAt  float64 `json:"updated_at"`
 	}
 
 	accessToken := getAccessToken(w, r)
-	fmt.Println("access token:", accessToken)
+
+	userInfo, err := getUserInfo(accessToken)
+	if err != nil {
+		http.Error(w, "Failed to get user info", http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.ExecuteTemplate(w, "layout.tmpl", userInfo)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func genRandState() (string, error) {
@@ -114,6 +157,19 @@ func kindeAuth(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(accessToken)
 }
 
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	cookies := r.Cookies()
+
+	// Iterate through the cookies and set MaxAge to a negative value to delete them
+	for _, cookie := range cookies {
+		cookie.MaxAge = -1
+		http.SetCookie(w, cookie)
+	}
+
+	// http.Redirect(w, r, "/login", http.StatusSeeOther)
+
+}
+
 // Handling the callback
 // send {client_id: 102938, client_secret: 123}
 
@@ -142,6 +198,7 @@ func main() {
 	http.HandleFunc("/dashboard", dashboardHandler)
 	http.HandleFunc("/login", kindeAuth)
 	http.HandleFunc("/register", kindeAuth)
+	http.HandleFunc("/logout", logoutHandler)
 
 	// http.HandleFunc("/logout", kindeAuth)
 
