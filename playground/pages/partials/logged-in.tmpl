@@ -11,12 +11,20 @@
                                 src="{{.Picture}}"
                                 alt="user profile avatar"
                             />
-                        {{else}}
+                        {{else if .Initials}}
                             <p>{{.Initials}}</p>
+                        {{else}}
+                            <p>No Name</p>
                         {{end}}
                     </div>
                     <div>
-                        <p class="js-user-name text-heading-2">{{.Name}}</p>
+                        <p class="js-user-name text-heading-2">
+                            {{if .Name}}
+                                {{.Name}}
+                            {{else}}
+                                No name
+                            {{end}}
+                        </p>
                         <a id="logout" class="text-subtle" type="button" href="/logout">
                             Sign out
                         </a>
