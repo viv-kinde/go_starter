@@ -1,6 +1,6 @@
 # Kinde Golang Starter Kit
 
-This is the official Kinde SDK for PHP.
+This is the official Kinde SDK for Golang.
 
 ## Getting Started
 
